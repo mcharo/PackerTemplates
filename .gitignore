@@ -1,3 +1,5 @@
 output-*/*
 packer_cache/
 *.box
+*.iso
+.DS_Store

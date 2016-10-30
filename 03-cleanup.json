@@ -8,32 +8,30 @@
   "builders": [
     {
       "communicator": "winrm",
-      "guest_additions_mode": "disable",
-      "guest_additions_path": "C:/users/vagrant/VBoxGuestAdditions.iso",
-      "headless": "{{ user `headless` }}",
+      "parallels_tools_mode": "disable",
       "output_directory": "./output-{{ user `os_name` }}-{{ user `image_name` }}/",
       "shutdown_command": "shutdown /s /t 10 /f /d p:4:1 /c \"Packer Shutdown\"",
       "shutdown_timeout": "1h",
       "source_path": "{{user `source_path`}}",
-      "type": "virtualbox-ovf",
-      "vboxmanage": [
+      "type": "parallels-pvm",
+      "prlctl": [
         [
-          "modifyvm",
+          "set",
           "{{.Name}}",
-          "--memory",
-          "2048"
+          "--memsize",
+          "1536"
         ],
         [
-          "modifyvm",
-          "{{.Name}}",
-          "--vram",
-          "48"
-        ],
-        [
-          "modifyvm",
+          "set",
           "{{.Name}}",
           "--cpus",
-          "2"
+          "1"
+        ],
+        [
+          "set",
+          "{{.Name}}",
+          "--efi-boot",
+          "off"
         ]
       ],
       "vm_name": "{{ user `os_name` }}-{{ user `image_name` }}",

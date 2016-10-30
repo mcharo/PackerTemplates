@@ -21,4 +21,9 @@ Vagrant.configure(2) do |config|
     domain.memory = 2028
     domain.cpus = 2
   end
+
+  config.vm.provider "parallels" do |prl|
+    prl.memory = 2048
+    prl.cpus = 2
+  end
 end

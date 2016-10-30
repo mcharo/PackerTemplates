@@ -1,46 +1,32 @@
 {
   "builders": [
     {
-      "type": "virtualbox-iso",
-      "vboxmanage": [
+      "type": "parallels-iso",
+      "prlctl": [
         [
-          "modifyvm",
+          "set",
           "{{.Name}}",
-          "--memory",
-          "2048"
+          "--memsize",
+          "1536"
         ],
         [
-          "modifyvm",
-          "{{.Name}}",
-          "--vram",
-          "48"
-        ],
-        [
-          "modifyvm",
+          "set",
           "{{.Name}}",
           "--cpus",
-          "2"
-        ]
-      ],
-      "vboxmanage_post": [
+          "1"
+        ],
         [
-          "storageattach",
+          "set",
           "{{.Name}}",
-          "--storagectl",
-          "IDE Controller",
-          "--port",
-          "1",
-          "--device",
-          "0",
-          "--medium",
-          "none"
+          "--efi-boot",
+          "off"
         ]
       ],
       "output_directory": "./output-{{ user `os_name` }}-base/",
       "vm_name": "{{ user `os_name` }}-base",
-      "guest_additions_mode": "attach",
+      "parallels_tools_flavor": "win",
+      "parallels_tools_mode": "upload",
       "guest_os_type": "{{ user `guest_os_type` }}",
-      "headless": "{{ user `headless` }}",
       "iso_url": "{{ user `iso_url` }}",
       "iso_checksum": "{{ user `iso_checksum` }}",
       "iso_checksum_type": "sha1",
@@ -59,11 +45,11 @@
   "provisioners": [
     {
       "type": "powershell",
-      "script": "scripts/install_oracle_guest_additions.ps1",
+      "script": "{{ user `tools_cmd` }}",
       "elevated_user": "vagrant",
       "elevated_password": "vagrant",
       "environment_vars": [
-        "install_vbox_tools={{user `install_vbox_tools`}}"
+        "install_tools={{user `install_tools`}}"
       ]
     }
   ],
@@ -73,6 +59,6 @@
     "iso_checksum": "",
     "iso_url": "",
     "guest_os_type": "",
-    "install_vbox_tools": ""
+    "install_tools": ""
   }
 }

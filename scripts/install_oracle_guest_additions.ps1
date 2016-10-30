@@ -1,4 +1,4 @@
-if ($env:install_vbox_tools -eq $true)
+if ($env:install_tools -eq $true)
 {
   Write-Host "Installing Virtualbox Guest Additions"
   certutil -addstore -f "TrustedPublisher" E:\cert\oracle-vbox.cer

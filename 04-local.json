@@ -32,6 +32,40 @@
       "output_directory": "./output-{{user `os_name`}}-{{user `image_name`}}/",
       "vm_name": "{{user `os_name`}}-{{user `image_name`}}",
       "parallels_tools_mode": "disable"
+    },
+    {
+      "type": "virtualbox-ovf",
+      "vboxmanage": [
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--memory",
+          "2048"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--vram",
+          "48"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--cpus",
+          "2"
+        ]
+      ],
+      "source_path": "{{user `source_path`}}",
+      "headless": "{{ user `headless` }}",
+      "communicator": "winrm",
+      "winrm_username": "vagrant",
+      "winrm_password": "vagrant",
+      "winrm_timeout": "12h",
+      "shutdown_command": "C:/Windows/packer/PackerShutdown.bat",
+      "shutdown_timeout": "1h",
+      "output_directory": "./output-{{user `os_name`}}-{{user `image_name`}}/",
+      "vm_name": "{{user `os_name`}}-{{user `image_name`}}",
+      "guest_additions_mode": "disable"
     }
   ],
   "provisioners": [

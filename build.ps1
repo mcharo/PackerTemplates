@@ -83,11 +83,13 @@ switch ($Builder)
 {
     'parallels' {
         $osData.tools_cmd = "scripts/install_parallels_tools.ps1"
+        $osData.builder = "-only=parallels"
         $outext = 'pvm'
         break
     }
     'vbox' {
         $osData.tools_cmd = "scripts/install_oracle_guest_additions.ps1"
+        $osData.builder = "-only=virtualbox"
         $outext = 'ovf'
         break
     }
@@ -117,27 +119,27 @@ if ($PSCmdlet.ShouldProcess("Run packer builds"))
     if ($ContinueFromBase -eq $false -and $ContinueFromCleanup -eq $false)
     {
         # Base Image and VirtualBox if enabled
-        Start-Process -FilePath 'packer' -ArgumentList "build $($osData.force_cmd) -var `"install_tools=$($osData.install_tools)`" -var `"tools_cmd=$($osData.tools_cmd)`" -var `"os_name=$($osData.os_name)`" -var `"iso_checksum=$($osData.iso_checksum)`" -var `"iso_url=$($osData.iso_url)`" -var `"guest_os_type=$($osData.guest_os_type)`" ./01-windows-base.json" -Wait -NoNewWindow
+        Start-Process -FilePath 'packer' -ArgumentList "build $($osData.force_cmd) $($osData.builder)-iso -var `"install_tools=$($osData.install_tools)`" -var `"tools_cmd=$($osData.tools_cmd)`" -var `"os_name=$($osData.os_name)`" -var `"iso_checksum=$($osData.iso_checksum)`" -var `"iso_url=$($osData.iso_url)`" -var `"guest_os_type=$($osData.guest_os_type)`" ./01-windows-base.json" -Wait -NoNewWindow
     }
     if ($BaseOnly -eq $false)
     {
         if ($ContinueFromCleanup -eq $false)
         {
             # Installs Windows Updates and WMF5
-            Start-Process -FilePath 'packer' -ArgumentList "build $($osData.force_cmd) -var `"os_name=$($osData.os_name)`" -var `"source_path=./output-$($osData.os_name)-base/$($osData.os_name)-base.$outext`" ./02-win_updates-wmf5.json" -Wait -NoNewWindow
+            Start-Process -FilePath 'packer' -ArgumentList "build $($osData.force_cmd) $($osData.builder)-$outext -var `"os_name=$($osData.os_name)`" -var `"source_path=./output-$($osData.os_name)-base/$($osData.os_name)-base.$outext`" ./02-win_updates-wmf5.json" -Wait -NoNewWindow
 
             # Cleanup
-            Start-Process -FilePath 'packer' -ArgumentList "build $($osData.force_cmd) -var `"os_name=$($osData.os_name)`" -var `"source_path=./output-$($osData.os_name)-updates_wmf5/$($osData.os_name)-updates_wmf5.$outext`" ./03-cleanup.json" -Wait -NoNewWindow
+            Start-Process -FilePath 'packer' -ArgumentList "build $($osData.force_cmd) $($osData.builder)-$outext -var `"os_name=$($osData.os_name)`" -var `"source_path=./output-$($osData.os_name)-updates_wmf5/$($osData.os_name)-updates_wmf5.$outext`" ./03-cleanup.json" -Wait -NoNewWindow
         }
         if ($SkipAtlas)
         {
             # Vagrant Image Only
-            Start-Process -FilePath 'packer' -ArgumentList "build -debug $($osData.force_cmd) -var `"os_name=$($osData.os_name)`" -var `"source_path=./output-$($osData.os_name)-cleanup/$($osData.os_name)-cleanup.$outext`" ./04-local.json" -Wait -NoNewWindow
+            Start-Process -FilePath 'packer' -ArgumentList "build -debug $($osData.force_cmd) $($osData.builder)-$outext -var `"os_name=$($osData.os_name)`" -var `"source_path=./output-$($osData.os_name)-cleanup/$($osData.os_name)-cleanup.$outext`" ./04-local.json" -Wait -NoNewWindow
         }
         else
         {
             # Vagrant + Atlas
-            Start-Process -FilePath 'packer' -ArgumentList "build $($osData.force_cmd) -var `"os_name=$($osData.os_name)`" -var `"source_path=./output-$($osData.os_name)-cleanup/$($osData.os_name)-cleanup.$outext`" -var `"full_os_name=$($osData.full_os_name)`" ./04-atlas.json" -Wait -NoNewWindow
+            Start-Process -FilePath 'packer' -ArgumentList "build $($osData.force_cmd) $($osData.builder)-$outext -var `"os_name=$($osData.os_name)`" -var `"source_path=./output-$($osData.os_name)-cleanup/$($osData.os_name)-cleanup.$outext`" -var `"full_os_name=$($osData.full_os_name)`" ./04-atlas.json" -Wait -NoNewWindow
         }
     }
 }

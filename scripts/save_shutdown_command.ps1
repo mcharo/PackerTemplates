@@ -3,7 +3,7 @@ New-Item -Path $packerWindowsDir -ItemType Directory -Force
 
 # final shutdown command
 $shutdownCmd = @"
-netsh advfirewall firewall set rule name="WinRM-HTTP" new action=block
+sc config winrm start=demand
 
 C:/windows/system32/sysprep/sysprep.exe /generalize /oobe /unattend:C:/Windows/packer/unattended.xml /quiet /shutdown
 "@
@@ -67,7 +67,8 @@ Set-Content -Path "$($packerWindowsDir)\unattended.xml" -Value $unattendedXML
 # will run on first boot
 # https://technet.microsoft.com/en-us/library/cc766314(v=ws.10).aspx
 $setupComplete = @"
-netsh advfirewall firewall set rule name="WinRM-HTTP" new action=allow
+cmd.exe /c sc config winrm start= auto
+cmd.exe /c net start winrm
 "@
 
 New-Item -Path 'C:\Windows\Setup\Scripts' -ItemType Directory -Force
